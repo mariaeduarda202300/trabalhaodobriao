@@ -1,0 +1,282 @@
+/*
+  ==========================================================================
+  CSS GLOBAL DO PROJETO
+  ==========================================================================
+  Aqui usamos "variáveis CSS" (as linhas dentro de :root). Isso é ótimo
+  para ensinar aos alunos: em vez de espalhar cores por todo o código,
+  definimos elas uma vez aqui e reaproveitamos com var(--nome-da-variavel).
+  Se um dia quiserem trocar a cor principal do sistema, basta mudar em UM lugar.
+*/
+
+:root {
+  --cor-fundo: #f3f6f9;         /* fundo geral da aplicação */
+  --cor-superficie: #ffffff;    /* fundo de cards, formulários */
+  --cor-primaria: #2f6690;      /* azul principal (botões, destaques) */
+  --cor-primaria-escura: #234f70;
+  --cor-acento: #16a394;        /* verde-azulado usado em ações positivas */
+  --cor-texto: #1f2937;         /* texto principal, quase preto */
+  --cor-texto-suave: #5b6b7c;   /* texto secundário, mais claro */
+  --cor-borda: #dde3ea;
+  --cor-erro: #d64545;
+  --cor-erro-fundo: #fbeaea;
+  --sombra: 0 2px 8px rgba(31, 41, 55, 0.06);
+  --raio: 10px;
+}
+
+* {
+  box-sizing: border-box; /* facilita o cálculo de largura/altura com padding */
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+}
+
+/* ---------- Layout geral ---------- */
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background-color: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar h1 {
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--cor-primaria-escura);
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+}
+
+.container {
+  max-width: 880px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ---------- Telas de autenticação (login/registro) ---------- */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.auth-card {
+  background-color: var(--cor-superficie);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 32px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.auth-card h2 {
+  margin-top: 0;
+  color: var(--cor-primaria-escura);
+}
+
+.auth-switch {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+.auth-switch a {
+  color: var(--cor-primaria);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* ---------- Formulários (usados em login, registro e produtos) ---------- */
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background-color: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
+input:focus,
+textarea:focus {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 1px;
+  border-color: var(--cor-primaria);
+}
+
+/* ---------- Botões ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.btn:hover {
+  filter: brightness(0.93);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background-color: var(--cor-primaria);
+  color: #fff;
+  width: 100%;
+}
+
+.btn-secondary {
+  background-color: #eef2f6;
+  color: var(--cor-texto);
+}
+
+.btn-danger {
+  background-color: var(--cor-erro);
+  color: #fff;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
+/* ---------- Mensagens de erro ---------- */
+
+.alert-error {
+  background-color: var(--cor-erro-fundo);
+  color: var(--cor-erro);
+  border: 1px solid #f2c6c6;
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+/* ---------- Card do formulário de produto ---------- */
+
+.card {
+  background-color: var(--cor-superficie);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  color: var(--cor-primaria-escura);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+/* ---------- Tabela de produtos ---------- */
+
+.table-wrapper {
+  background-color: var(--cor-superficie);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: #f8fafb;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+th {
+  color: var(--cor-texto-suave);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.03em;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--cor-texto-suave);
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--cor-texto-suave);
+}

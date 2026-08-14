@@ -1,0 +1,639 @@
+/*
+  ==========================================================================
+  CSS GLOBAL DO PROJETO — CARS NEON
+  ==========================================================================
+  Aqui usamos "variáveis CSS" (as linhas dentro de :root). Isso é ótimo
+  para ensinar aos alunos: em vez de espalhar cores por todo o código,
+  definimos elas uma vez aqui e reaproveitamos com var(--nome-da-variavel).
+  Se um dia quiserem trocar a cor principal do sistema, basta mudar em UM lugar.
+
+  Direção visual: painel automotivo moderno. Fundo grafite muito claro,
+  superfícies em branco puro, um azul-petróleo profundo como cor de
+  identidade e um âmbar (cor de "farol") como acento de ação/destaque.
+  Cantos levemente arredondados, sombras baixas e discretas, transições
+  suaves — nada de exagero, o objetivo é parecer "produto", não "protótipo".
+*/
+
+:root {
+  /* Paleta principal */
+  --cor-fundo: #f2f4f7;              /* fundo geral, cinza-grafite bem claro */
+  --cor-superficie: #ffffff;         /* fundo de cards, formulários */
+  --cor-superficie-alt: #f8f9fb;     /* variação sutil, ex.: cabeçalho de tabela */
+  --cor-primaria: #14304d;           /* azul-petróleo profundo (identidade) */
+  --cor-primaria-escura: #0c1f33;
+  --cor-primaria-hover: #1c3f66;
+  --cor-acento: #e8992c;             /* âmbar "farol", usado em ações de destaque */
+  --cor-acento-escuro: #c97f1c;
+
+  /* Texto */
+  --cor-texto: #182230;              /* texto principal, quase preto azulado */
+  --cor-texto-suave: #64748b;        /* texto secundário */
+  --cor-texto-fraco: #94a3b8;        /* placeholders, hints */
+
+  /* Bordas e estados */
+  --cor-borda: #e2e6ec;
+  --cor-borda-forte: #cbd2dc;
+  --cor-erro: #c8443a;
+  --cor-erro-fundo: #fdecea;
+  --cor-erro-borda: #f4c2bd;
+
+  /* Sombras — bem discretas, "elevação de vidro fosco" */
+  --sombra-sm: 0 1px 2px rgba(16, 24, 40, 0.04);
+  --sombra: 0 1px 3px rgba(16, 24, 40, 0.06), 0 6px 16px rgba(16, 24, 40, 0.05);
+  --sombra-hover: 0 2px 4px rgba(16, 24, 40, 0.07), 0 10px 24px rgba(16, 24, 40, 0.08);
+
+  /* Formas e espaçamento */
+  --raio: 12px;
+  --raio-sm: 8px;
+  --raio-pill: 999px;
+
+  /* Transições */
+  --transicao: 160ms ease;
+}
+
+/* ==========================================================================
+   TEMA ESCURO
+   ==========================================================================
+   Ativado via atributo data-theme="dark" na tag <html> (ver
+   context/ThemeContext.jsx). Como todo o CSS acima já usa var(--...),
+   só precisamos redefinir os valores das mesmas variáveis aqui — o
+   resto da folha de estilo não muda em nada.
+*/
+:root[data-theme="dark"] {
+  --cor-fundo: #0e141d;
+  --cor-superficie: #161f2c;
+  --cor-superficie-alt: #1c2736;
+
+  --cor-primaria: #4c8ac9;
+  --cor-primaria-escura: #d7e6f7;
+  --cor-primaria-hover: #5f9bd6;
+
+  --cor-acento: #f0a83c;
+  --cor-acento-escuro: #d98f24;
+
+  --cor-texto: #e7ecf3;
+  --cor-texto-suave: #9aa8bc;
+  --cor-texto-fraco: #64738a;
+
+  --cor-borda: #29354a;
+  --cor-borda-forte: #3c4d66;
+
+  --cor-erro: #ff8079;
+  --cor-erro-fundo: rgba(200, 68, 58, 0.16);
+  --cor-erro-borda: rgba(200, 68, 58, 0.4);
+
+  --sombra-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --sombra: 0 1px 3px rgba(0, 0, 0, 0.4), 0 6px 20px rgba(0, 0, 0, 0.35);
+  --sombra-hover: 0 2px 4px rgba(0, 0, 0, 0.45), 0 10px 28px rgba(0, 0, 0, 0.4);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+/* Transição suave ao alternar entre os temas, em vez de uma troca brusca. */
+body,
+.topbar,
+.card,
+.auth-card,
+.table-wrapper,
+thead,
+input,
+textarea,
+.btn,
+.cube-face {
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+* {
+  box-sizing: border-box; /* facilita o cálculo de largura/altura com padding */
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Layout geral ---------- */
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  background-color: var(--cor-superficie);
+  border-bottom: 1px solid var(--cor-borda);
+  padding: 16px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.topbar h1 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--cor-primaria-escura);
+}
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.875rem;
+  color: var(--cor-texto-suave);
+}
+
+.container {
+  max-width: 880px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* ---------- Telas de autenticação (login/registro) ---------- */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(20, 48, 77, 0.06), transparent 45%),
+    radial-gradient(circle at 85% 80%, rgba(232, 153, 44, 0.07), transparent 45%),
+    var(--cor-fundo);
+}
+
+.auth-card {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 380px;
+}
+
+.auth-card h2 {
+  margin-top: 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--cor-primaria-escura);
+}
+
+.auth-switch {
+  margin-top: 18px;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--cor-texto-suave);
+}
+
+.auth-switch a {
+  color: var(--cor-primaria);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transicao);
+}
+
+.auth-switch a:hover {
+  border-bottom-color: var(--cor-primaria);
+}
+
+/* ---------- Formulários (usados em login, registro e produtos) ---------- */
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid var(--cor-borda-forte);
+  border-radius: var(--raio-sm);
+  font-size: 0.95rem;
+  font-family: inherit;
+  background-color: var(--cor-superficie);
+  color: var(--cor-texto);
+  transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--cor-texto-fraco);
+}
+
+input:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(20, 48, 77, 0.12);
+}
+
+/* ---------- Botões ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 20px;
+  border: none;
+  border-radius: var(--raio-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--transicao), filter var(--transicao), transform var(--transicao), box-shadow var(--transicao);
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-primary {
+  background-color: var(--cor-primaria);
+  color: #fff;
+  width: 100%;
+  box-shadow: 0 1px 2px rgba(12, 31, 51, 0.2);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--cor-primaria-hover);
+}
+
+.btn-secondary {
+  background-color: var(--cor-superficie-alt);
+  color: var(--cor-texto);
+  border: 1px solid var(--cor-borda);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background-color: #eef1f5;
+  border-color: var(--cor-borda-forte);
+}
+
+.btn-danger {
+  background-color: var(--cor-erro);
+  color: #fff;
+}
+
+.btn-danger:hover:not(:disabled) {
+  filter: brightness(0.92);
+}
+
+.btn-small {
+  padding: 7px 14px;
+  font-size: 0.8rem;
+}
+
+/* ---------- Mensagens de erro ---------- */
+
+.alert-error {
+  background-color: var(--cor-erro-fundo);
+  color: var(--cor-erro);
+  border: 1px solid var(--cor-erro-borda);
+  border-radius: var(--raio-sm);
+  padding: 11px 15px;
+  margin-bottom: 18px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+/* ---------- Card do formulário de produto ---------- */
+
+.card {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  padding: 28px;
+  margin-bottom: 28px;
+  transition: box-shadow var(--transicao);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--cor-primaria-escura);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 14px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ---------- Tabela de produtos ---------- */
+
+.table-wrapper {
+  background-color: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background-color: var(--cor-superficie-alt);
+}
+
+th, td {
+  text-align: left;
+  padding: 14px 18px;
+  font-size: 0.9rem;
+  border-bottom: 1px solid var(--cor-borda);
+}
+
+th {
+  color: var(--cor-texto-suave);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.05em;
+}
+
+tbody tr {
+  transition: background-color var(--transicao);
+}
+
+tbody tr:hover {
+  background-color: var(--cor-superficie-alt);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--cor-texto-suave);
+}
+
+.loading-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--cor-texto-suave);
+}
+
+/* ---------- Acessibilidade: foco visível para navegação por teclado ---------- */
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--cor-acento);
+  outline-offset: 2px;
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 640px) {
+  .container {
+    padding: 20px 16px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    padding: 14px 18px;
+  }
+}
+
+/* ==========================================================================
+   TOGGLE DE TEMA (claro/escuro)
+   ========================================================================== */
+
+.theme-toggle-fixed {
+  position: fixed;
+  top: 14px;
+  right: 16px;
+  z-index: 1000;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  line-height: 0;
+}
+
+.theme-toggle-track {
+  display: flex;
+  align-items: center;
+  width: 46px;
+  height: 26px;
+  padding: 3px;
+  border-radius: var(--raio-pill);
+  background-color: var(--cor-superficie-alt);
+  border: 1px solid var(--cor-borda-forte);
+  box-shadow: var(--sombra-sm);
+  transition: background-color var(--transicao), border-color var(--transicao);
+}
+
+:root[data-theme="dark"] .theme-toggle-track {
+  justify-content: flex-end;
+}
+
+.theme-toggle-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background-color: var(--cor-primaria);
+  color: #fff;
+  transition: background-color var(--transicao), transform var(--transicao);
+}
+
+.theme-toggle:hover .theme-toggle-thumb {
+  background-color: var(--cor-primaria-hover);
+}
+
+.theme-toggle:focus-visible .theme-toggle-track {
+  outline: 2px solid var(--cor-acento);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   BOTÃO CUBO 3D
+   ==========================================================================
+   --cube-w controla TUDO: largura visível e profundidade (translateZ) das
+   faces. Isso é o que mantém o cubo "fechado" (sem gaps) em qualquer
+   tamanho de tela, já que os dois valores usam sempre a mesma variável.
+   clamp(mínimo, ideal-em-vw, máximo) faz a largura responder ao viewport
+   sem nunca ficar pequena/gigante demais.
+*/
+
+.cube-btn {
+  --cube-w: clamp(150px, 46vw, 220px);
+  --cube-h: 46px;
+
+  display: block;
+  width: 100%;
+  max-width: var(--cube-w);
+  margin: 0 auto;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.cube-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cube-scene {
+  display: block;
+  width: 100%;
+  height: var(--cube-h);
+  perspective: 800px;
+}
+
+.cube {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 650ms cubic-bezier(0.65, 0, 0.35, 1);
+  transform: rotateY(0deg);
+}
+
+/* Hover (desktop), foco por teclado e :active (toque em celular/tablet)
+   disparam o mesmo giro — assim funciona em qualquer tipo de tela. */
+.cube-btn:hover .cube,
+.cube-btn:focus-visible .cube,
+.cube-btn:active .cube {
+  transform: rotateY(-90deg);
+}
+
+.cube-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--raio-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--cor-primaria);
+  backface-visibility: hidden;
+  box-shadow: 0 1px 2px rgba(12, 31, 51, 0.2);
+}
+
+.cube-front {
+  transform: rotateY(0deg) translateZ(calc(var(--cube-w) / 2));
+}
+.cube-right {
+  background-color: var(--cor-primaria-hover);
+  transform: rotateY(90deg) translateZ(calc(var(--cube-w) / 2));
+}
+.cube-back {
+  transform: rotateY(180deg) translateZ(calc(var(--cube-w) / 2));
+}
+.cube-left {
+  background-color: var(--cor-primaria-hover);
+  transform: rotateY(-90deg) translateZ(calc(var(--cube-w) / 2));
+}
+
+/* Variante usada dentro do formulário de livro, onde o botão não deve
+   ocupar a largura toda (fica ao lado do "Cancelar"). */
+.btn-primary-cube--auto {
+  margin: 0;
+}
+
+/* Quem prefere menos animação (configuração de acessibilidade do SO)
+   ainda vê a troca de texto, só que sem o giro 3D. */
+@media (prefers-reduced-motion: reduce) {
+  .cube {
+    transition: none;
+  }
+}
+
+/* Em telas bem estreitas, reduz um pouco a altura do botão. */
+@media (max-width: 380px) {
+  .cube-btn {
+    --cube-h: 42px;
+  }
+  .cube-face {
+    font-size: 0.85rem;
+  }
+}
+
+/* ==========================================================================
+   LIVRO QUE SEGUE O MOUSE
+   ========================================================================== */
+
+.mouse-follower {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: clamp(28px, 4vw, 44px);
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  z-index: 2000;
+  opacity: 0.9;
+  filter: drop-shadow(0 4px 8px rgba(16, 24, 40, 0.25));
+  will-change: transform;
+}
+
+/* Em telas sem mouse de verdade (celular/tablet) o componente React nem
+   chega a animar, mas por garantia também escondemos via CSS. */
+@media (pointer: coarse) {
+  .mouse-follower {
+    display: none;
+  }
+}
