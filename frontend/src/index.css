@@ -154,6 +154,41 @@ body {
   color: var(--cor-texto-suave);
 }
 
+.topbar-nav {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.topbar-nav a {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--cor-texto-suave);
+  text-decoration: none;
+  padding: 4px 2px;
+  border-bottom: 2px solid transparent;
+}
+
+.topbar-nav a.active {
+  color: var(--cor-primaria-escura);
+  border-bottom-color: var(--cor-primaria);
+}
+
+.checkbox-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  padding: 10px 0;
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: normal;
+}
+
 .container {
   max-width: 880px;
   width: 100%;

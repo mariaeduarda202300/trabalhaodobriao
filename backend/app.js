@@ -3,6 +3,11 @@ const cors = require('cors');
 const prisma = require('./config/db');
 const productsRoutes = require('./routes/ProductsRoute');
 const usersRoutes = require('./routes/UsersRoute');
+const authorsRoutes = require('./routes/AuthorsRoute');
+const perfilRoutes = require('./routes/PerfilRoute');
+const emprestimosRoutes = require('./routes/EmprestimosRoute');
+const reservasRoutes = require('./routes/ReservasRoute');
+const relatoriosRoutes = require('./routes/RelatoriosRoute');
 
 const app = express();
 
@@ -11,7 +16,12 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/api/', productsRoutes);
+app.use('/api/', authorsRoutes);
 app.use(usersRoutes);
+app.use(perfilRoutes);
+app.use(emprestimosRoutes);
+app.use(reservasRoutes);
+app.use(relatoriosRoutes);
 
 // Rota de verificação: confirma se a API está no ar e se a conexão
 // com o banco de dados (Neon/Postgres via Prisma) está funcionando.

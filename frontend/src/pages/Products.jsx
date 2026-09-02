@@ -59,6 +59,31 @@ export default function Books() {
     }
   }
 
+  async function handleEmprestar(livro) {
+    const dias = window.prompt('Em quantos dias o livro deve ser devolvido?', '7');
+    if (dias === null) return;
+
+    const dataDevolucaoPrevista = new Date(Date.now() + Number(dias) * 24 * 60 * 60 * 1000).toISOString();
+
+    setErro('');
+    try {
+      await api.criarEmprestimo({ bookId: livro.id, dataDevolucaoPrevista }, token);
+      await carregarLivros();
+    } catch (err) {
+      setErro(err.message);
+    }
+  }
+
+  async function handleReservar(livro) {
+    setErro('');
+    try {
+      await api.criarReserva({ bookId: livro.id }, token);
+      await carregarLivros();
+    } catch (err) {
+      setErro(err.message);
+    }
+  }
+
   return (
     <div className="container">
       {erro && <div className="alert-error">{erro}</div>}
@@ -79,9 +104,10 @@ export default function Books() {
             <thead>
               <tr>
                 <th>Título</th>
-                <th>Autor</th>
+                <th>Autor(es)</th>
                 <th>ISBN</th>
                 <th>Quantidade</th>
+                <th>Disponível</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -89,9 +115,10 @@ export default function Books() {
               {livros.map((livro) => (
                 <tr key={livro.id}>
                   <td>{livro.titulo}</td>
-                  <td>{livro.autor}</td>
+                  <td>{(livro.autores ?? []).map((a) => a.nome).join(', ') || '—'}</td>
                   <td>{livro.isbn}</td>
                   <td>{livro.quantidade}</td>
+                  <td>{livro.disponivel ?? livro.quantidade}</td>
                   <td className="actions">
                     <button
                       className="btn btn-secondary btn-small"
@@ -104,6 +131,18 @@ export default function Books() {
                       onClick={() => handleExcluir(livro)}
                     >
                       Excluir
+                    </button>
+                    <button
+                      className="btn btn-secondary btn-small"
+                      onClick={() => handleEmprestar(livro)}
+                    >
+                      Emprestar
+                    </button>
+                    <button
+                      className="btn btn-secondary btn-small"
+                      onClick={() => handleReservar(livro)}
+                    >
+                      Reservar
                     </button>
                   </td>
                 </tr>

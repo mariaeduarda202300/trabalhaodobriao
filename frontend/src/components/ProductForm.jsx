@@ -1,43 +1,73 @@
 import React, { useEffect, useState } from 'react';
 import CubeButton from './CubeButton.jsx';
+import { useAuth } from '../context/AuthContext.jsx';
+import * as api from '../services/api.js';
 
 // ==========================================================================
 // FORMULÁRIO DE LIVRO — reutilizável para CRIAR e para EDITAR
 // ==========================================================================
 // Este componente funciona como um formulário único: ele cria e edita
 // livros dependendo da prop "produtoEmEdicao".
+//
+// O campo "autor" (texto livre) virou uma relação N:N com a entidade
+// Author: um livro pode ter vários autores, e um autor pode assinar
+// vários livros. Por isso aqui usamos uma lista de checkboxes em vez de
+// um <input> de texto.
 export default function ProductForm({ produtoEmEdicao, onSalvar, onCancelar }) {
+  const { token } = useAuth();
+
   const [titulo, setTitulo] = useState('');
-  const [autor, setAutor] = useState('');
   const [isbn, setIsbn] = useState('');
   const [descricao, setDescricao] = useState('');
   const [quantidade, setQuantidade] = useState('');
+  const [authorIds, setAuthorIds] = useState([]);
+
+  const [autoresDisponiveis, setAutoresDisponiveis] = useState([]);
+  const [erroAutores, setErroAutores] = useState('');
+
+  useEffect(() => {
+    async function carregarAutores() {
+      try {
+        const dados = await api.listarAutores(token);
+        setAutoresDisponiveis(dados);
+      } catch (err) {
+        setErroAutores(err.message);
+      }
+    }
+    carregarAutores();
+  }, [token]);
 
   useEffect(() => {
     if (produtoEmEdicao) {
       setTitulo(produtoEmEdicao.titulo ?? '');
-      setAutor(produtoEmEdicao.autor ?? '');
       setIsbn(produtoEmEdicao.isbn ?? '');
       setDescricao(produtoEmEdicao.descricao ?? '');
       setQuantidade(String(produtoEmEdicao.quantidade ?? ''));
+      setAuthorIds((produtoEmEdicao.autores ?? []).map((a) => a.id));
     } else {
       setTitulo('');
-      setAutor('');
       setIsbn('');
       setDescricao('');
       setQuantidade('');
+      setAuthorIds([]);
     }
   }, [produtoEmEdicao]);
+
+  function alternarAutor(id) {
+    setAuthorIds((atual) =>
+      atual.includes(id) ? atual.filter((a) => a !== id) : [...atual, id]
+    );
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
 
     onSalvar({
       titulo,
-      autor,
       isbn,
       descricao,
       quantidade: parseInt(quantidade, 10),
+      authorIds,
     });
   }
 
@@ -56,18 +86,6 @@ export default function ProductForm({ produtoEmEdicao, onSalvar, onCancelar }) {
               value={titulo}
               onChange={(e) => setTitulo(e.target.value)}
               placeholder="Ex: O Senhor dos Anéis"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="autor">Autor</label>
-            <input
-              id="autor"
-              type="text"
-              value={autor}
-              onChange={(e) => setAutor(e.target.value)}
-              placeholder="Ex: J.R.R. Tolkien"
               required
             />
           </div>
@@ -107,6 +125,30 @@ export default function ProductForm({ produtoEmEdicao, onSalvar, onCancelar }) {
               required
             />
           </div>
+        </div>
+
+        <div className="form-group">
+          <label>Autores</label>
+          {erroAutores && <div className="alert-error">{erroAutores}</div>}
+          {autoresDisponiveis.length === 0 ? (
+            <p>
+              Nenhum autor cadastrado ainda. Cadastre autores na tela{' '}
+              <strong>Autores</strong> antes de vincular a um livro.
+            </p>
+          ) : (
+            <div className="checkbox-list">
+              {autoresDisponiveis.map((autor) => (
+                <label key={autor.id} className="checkbox-item">
+                  <input
+                    type="checkbox"
+                    checked={authorIds.includes(autor.id)}
+                    onChange={() => alternarAutor(autor.id)}
+                  />
+                  {autor.nome}
+                </label>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="form-actions">
