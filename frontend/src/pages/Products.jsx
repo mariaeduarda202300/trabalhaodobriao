@@ -44,21 +44,6 @@ export default function Books() {
     }
   }
 
-  async function handleExcluir(livro) {
-    const confirmou = window.confirm(
-      `Excluir o livro "${livro.titulo}"? Essa ação não pode ser desfeita.`
-    );
-    if (!confirmou) return;
-
-    setErro('');
-    try {
-      await api.deletarLivro(livro.id, token);
-      await carregarLivros();
-    } catch (err) {
-      setErro(err.message);
-    }
-  }
-
   async function handleEmprestar(livro) {
     const dias = window.prompt('Em quantos dias o livro deve ser devolvido?', '7');
     if (dias === null) return;
@@ -125,12 +110,6 @@ export default function Books() {
                       onClick={() => setLivroEmEdicao(livro)}
                     >
                       Editar
-                    </button>
-                    <button
-                      className="btn btn-danger btn-small"
-                      onClick={() => handleExcluir(livro)}
-                    >
-                      Excluir
                     </button>
                     <button
                       className="btn btn-secondary btn-small"
