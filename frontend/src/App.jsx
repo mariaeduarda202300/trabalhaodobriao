@@ -25,6 +25,7 @@ function Topbar() {
         <NavLink to="/reservas">Reservas</NavLink>
       </nav>
       <div className="topbar-user">
+        <ThemeToggle />
         <span>Olá, {user?.username}</span>
         <button className="btn btn-secondary btn-small" onClick={logout}>
           Sair
@@ -50,8 +51,28 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/login"
+        element={
+          <>
+            <div className="theme-toggle-fixed">
+              <ThemeToggle />
+            </div>
+            <Login />
+          </>
+        }
+      />
+      <Route
+        path="/register"
+        element={
+          <>
+            <div className="theme-toggle-fixed">
+              <ThemeToggle />
+            </div>
+            <Register />
+          </>
+        }
+      />
 
       <Route
         path="/books"
@@ -102,11 +123,9 @@ export default function App() {
     <ThemeProvider>
       <AuthProvider>
         <BrowserRouter>
-          {/* Fixo no canto superior direito: funciona em qualquer página
-              (login, registro ou livros), sem depender da Topbar. */}
-          <div className="theme-toggle-fixed">
-            <ThemeToggle />
-          </div>
+          {/* O ThemeToggle agora fica dentro da Topbar (páginas logadas) ou
+              junto do Login/Register (páginas sem Topbar) — assim ele nunca
+              fica flutuando por cima do botão "Sair". */}
 
           {/* Livro que segue o mouse (só aparece em telas com mouse de verdade). */}
           <MouseFollower />

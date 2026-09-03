@@ -67,6 +67,7 @@ describe('validarLivro', () => {
     isbn: '9780261103573',
     descricao: 'Fantasia épica',
     quantidade: 3,
+    authorIds: ['author_1'],
   };
 
   it('aceita um livro com todos os campos válidos', () => {
@@ -106,6 +107,17 @@ describe('validarLivro', () => {
   it('aceita authorIds como lista de ids válida', () => {
     const erros = validarLivro({ ...livroValido, authorIds: ['author_1', 'author_2'] });
     expect(erros).toHaveLength(0);
+  });
+
+  it('rejeita livro sem nenhum autor selecionado', () => {
+    const erros = validarLivro({ ...livroValido, authorIds: [] });
+    expect(erros).toContain('Selecione pelo menos um autor.');
+  });
+
+  it('rejeita livro quando authorIds nem foi enviado', () => {
+    const { authorIds, ...semAutor } = livroValido;
+    const erros = validarLivro(semAutor);
+    expect(erros).toContain('Selecione pelo menos um autor.');
   });
 });
 

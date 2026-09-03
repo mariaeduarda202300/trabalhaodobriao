@@ -24,6 +24,7 @@ export default function ProductForm({ produtoEmEdicao, onSalvar, onCancelar }) {
 
   const [autoresDisponiveis, setAutoresDisponiveis] = useState([]);
   const [erroAutores, setErroAutores] = useState('');
+  const [erroValidacao, setErroValidacao] = useState('');
 
   useEffect(() => {
     async function carregarAutores() {
@@ -61,6 +62,12 @@ export default function ProductForm({ produtoEmEdicao, onSalvar, onCancelar }) {
 
   function handleSubmit(event) {
     event.preventDefault();
+
+    if (authorIds.length === 0) {
+      setErroValidacao('Selecione pelo menos um autor antes de cadastrar o livro.');
+      return;
+    }
+    setErroValidacao('');
 
     onSalvar({
       titulo,
@@ -151,13 +158,15 @@ export default function ProductForm({ produtoEmEdicao, onSalvar, onCancelar }) {
           )}
         </div>
 
+        {erroValidacao && <div className="alert-error">{erroValidacao}</div>}
+
         <div className="form-actions">
           <CubeButton
             type="submit"
-            front={modoEdicao ? 'Salvar' : 'Enviar'}
-            back={modoEdicao ? 'salvar' : 'enviar'}
-            right="submeter"
-            left="submeter"
+            front={modoEdicao ? 'Salvar' : 'Cadastrar'}
+            back={modoEdicao ? 'salvar' : 'cadastrar'}
+            right="confirmar"
+            left="confirmar"
             className="btn-primary-cube btn-primary-cube--auto"
           />
 

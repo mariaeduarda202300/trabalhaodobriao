@@ -105,7 +105,7 @@ export default function Books() {
               <tr>
                 <th>Título</th>
                 <th>Autor(es)</th>
-                <th>ISBN</th>
+                <th className="isbn-cell">ISBN</th>
                 <th>Quantidade</th>
                 <th>Disponível</th>
                 <th>Ações</th>
@@ -116,7 +116,7 @@ export default function Books() {
                 <tr key={livro.id}>
                   <td>{livro.titulo}</td>
                   <td>{(livro.autores ?? []).map((a) => a.nome).join(', ') || '—'}</td>
-                  <td>{livro.isbn}</td>
+                  <td className="isbn-cell">{livro.isbn}</td>
                   <td>{livro.quantidade}</td>
                   <td>{livro.disponivel ?? livro.quantidade}</td>
                   <td className="actions">

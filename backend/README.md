@@ -53,7 +53,7 @@ API REST em Express + Prisma (PostgreSQL via Neon) com autenticação JWT.
    ```
 5. Verifique a conexão com o banco:
    ```bash
-   curl http://localhost:3000/health
+   curl http://localhost:2000/health
    ```
    Deve responder `{"status":"ok","database":"connected"}`.
 

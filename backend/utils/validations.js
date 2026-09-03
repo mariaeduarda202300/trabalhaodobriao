@@ -62,6 +62,8 @@ function validarLivro({ titulo, isbn, descricao, quantidade, authorIds }) {
     (!Array.isArray(authorIds) || authorIds.some((id) => typeof id !== 'string' || id.trim().length === 0))
   ) {
     erros.push('authorIds deve ser uma lista de ids de autores.');
+  } else if (!Array.isArray(authorIds) || authorIds.length === 0) {
+    erros.push('Selecione pelo menos um autor.');
   }
 
   return erros;

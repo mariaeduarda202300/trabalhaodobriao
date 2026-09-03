@@ -398,7 +398,13 @@ textarea:focus {
   border: 1px solid var(--cor-borda);
   border-radius: var(--raio);
   box-shadow: var(--sombra);
-  overflow: hidden;
+  /* Antes era "overflow: hidden": se uma célula (ex: ISBN grande)
+     esticasse a tabela além da largura do card, o conteúdo que
+     ficasse para fora (como os botões de ação) era simplesmente
+     cortado e ficava invisível. Com overflow-x: auto, o card ganha
+     uma barra de rolagem horizontal em vez de esconder conteúdo. */
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 table {
@@ -440,6 +446,17 @@ tbody tr:last-child td {
 td.actions {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Um ISBN muito comprido não pode esticar a linha inteira da tabela
+   e empurrar as colunas seguintes (como os botões de Ação) pra fora
+   da área visível. Isso limita a largura da célula e quebra o texto
+   quando necessário, em vez de deixá-lo crescer sem limite. */
+.isbn-cell {
+  max-width: 160px;
+  word-break: break-all;
+  white-space: normal;
 }
 
 .empty-state {
@@ -584,8 +601,18 @@ textarea:focus-visible {
 }
 
 /* Hover (desktop), foco por teclado e :active (toque em celular/tablet)
-   disparam o mesmo giro — assim funciona em qualquer tipo de tela. */
-.cube-btn:hover .cube,
+   disparam o mesmo giro — assim funciona em qualquer tipo de tela.
+   IMPORTANTE: o :hover só é ativado em dispositivos que realmente têm
+   mouse (media query "hover: hover"). Sem essa condição, em celular o
+   primeiro toque already contava como ":hover", então o botão girava
+   sem clicar — e só o SEGUNDO toque de fato registrava o clique. Isso
+   é o clássico bug do "preciso tocar duas vezes pra funcionar". */
+@media (hover: hover) and (pointer: fine) {
+  .cube-btn:hover .cube {
+    transform: rotateY(-90deg);
+  }
+}
+
 .cube-btn:focus-visible .cube,
 .cube-btn:active .cube {
   transform: rotateY(-90deg);

@@ -40,6 +40,7 @@ const livroValido = {
   isbn: '9780261103573',
   descricao: 'Fantasia épica',
   quantidade: 3,
+  authorIds: ['author_1'],
 };
 
 beforeEach(() => {
