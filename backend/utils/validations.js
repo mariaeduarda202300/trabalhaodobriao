@@ -33,14 +33,11 @@ function validarLogin({ username, password }) {
   return erros;
 }
 
-function validarLivro({ titulo, autor, isbn, descricao, quantidade }) {
+function validarLivro({ titulo, isbn, descricao, quantidade, authorIds }) {
   const erros = [];
 
   if (!titulo || typeof titulo !== 'string' || titulo.trim().length === 0) {
     erros.push('Título é obrigatório.');
-  }
-  if (!autor || typeof autor !== 'string' || autor.trim().length === 0) {
-    erros.push('Autor é obrigatório.');
   }
   if (!isbn || typeof isbn !== 'string' || isbn.trim().length === 0) {
     erros.push('ISBN é obrigatório.');
@@ -60,6 +57,57 @@ function validarLivro({ titulo, autor, isbn, descricao, quantidade }) {
     erros.push('Quantidade deve ser um número inteiro maior ou igual a zero.');
   }
 
+  if (
+    authorIds !== undefined &&
+    (!Array.isArray(authorIds) || authorIds.some((id) => typeof id !== 'string' || id.trim().length === 0))
+  ) {
+    erros.push('authorIds deve ser uma lista de ids de autores.');
+  }
+
+  return erros;
+}
+
+function validarAutor({ nome }) {
+  const erros = [];
+
+  if (!nome || typeof nome !== 'string' || nome.trim().length === 0) {
+    erros.push('Nome do autor é obrigatório.');
+  }
+
+  return erros;
+}
+
+function validarPerfil({ nomeCompleto }) {
+  const erros = [];
+
+  if (!nomeCompleto || typeof nomeCompleto !== 'string' || nomeCompleto.trim().length === 0) {
+    erros.push('Nome completo é obrigatório.');
+  }
+
+  return erros;
+}
+
+function validarEmprestimo({ bookId, dataDevolucaoPrevista }) {
+  const erros = [];
+
+  if (!bookId || typeof bookId !== 'string' || bookId.trim().length === 0) {
+    erros.push('bookId é obrigatório.');
+  }
+
+  if (!dataDevolucaoPrevista || Number.isNaN(Date.parse(dataDevolucaoPrevista))) {
+    erros.push('dataDevolucaoPrevista é obrigatória e deve ser uma data válida.');
+  }
+
+  return erros;
+}
+
+function validarReserva({ bookId }) {
+  const erros = [];
+
+  if (!bookId || typeof bookId !== 'string' || bookId.trim().length === 0) {
+    erros.push('bookId é obrigatório.');
+  }
+
   return erros;
 }
 
@@ -67,4 +115,8 @@ module.exports = {
   validarRegistroUsuario,
   validarLogin,
   validarLivro,
+  validarAutor,
+  validarPerfil,
+  validarEmprestimo,
+  validarReserva,
 };

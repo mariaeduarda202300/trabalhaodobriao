@@ -57,21 +57,69 @@ API REST em Express + Prisma (PostgreSQL via Neon) com autenticação JWT.
    ```
    Deve responder `{"status":"ok","database":"connected"}`.
 
+## Modelo de dados
+
+- `User` **1:1** `Perfil` — dados complementares do usuário.
+- `User` **1:N** `Book` — livros cadastrados pelo usuário.
+- `Book` **N:N** `Author` (via `BookAuthor`) — um livro pode ter vários
+  autores, e um autor pode ter vários livros.
+- `User`/`Book` **1:N** `Emprestimo` — regra de negócio: não permite
+  empréstimo se não houver exemplares disponíveis
+  (`quantidade` do livro menos empréstimos em aberto).
+- `User`/`Book` **1:N** `Reserva` — regra de negócio: um mesmo usuário não
+  pode ter duas reservas `ATIVA` para o mesmo livro.
+
 ## Rotas da API
 
-| Método | Rota             | Protegida | Descrição                          |
-|--------|------------------|-----------|-------------------------------------|
-| POST   | `/register`      | não       | Cria um usuário                     |
-| POST   | `/login`         | não       | Retorna um token JWT                |
-| GET    | `/api/books`     | sim       | Lista todos os livros               |
-| GET    | `/api/me/books`  | sim       | Lista os livros do usuário logado   |
-| GET    | `/api/books/:id` | sim       | Detalhe de um livro                 |
-| POST   | `/api/books`     | sim       | Cria um livro                       |
-| PUT    | `/api/books/:id` | sim       | Atualiza um livro (só o dono)       |
-| DELETE | `/api/books/:id` | sim       | Exclui um livro (só o dono)         |
-| GET    | `/health`        | não       | Verifica se a API e o banco estão OK|
+| Método | Rota                               | Protegida | Descrição                                     |
+|--------|-------------------------------------|-----------|-------------------------------------------------|
+| POST   | `/register`                        | não       | Cria um usuário                                 |
+| POST   | `/login`                           | não       | Retorna um token JWT                            |
+| GET    | `/api/books`                       | sim       | Lista todos os livros (com autores e disponibilidade) |
+| GET    | `/api/me/books`                    | sim       | Lista os livros do usuário logado               |
+| GET    | `/api/books/:id`                   | sim       | Detalhe de um livro                             |
+| POST   | `/api/books`                       | sim       | Cria um livro (`authorIds: string[]` opcional)  |
+| PUT    | `/api/books/:id`                   | sim       | Atualiza um livro (só o dono)                   |
+| DELETE | `/api/books/:id`                   | sim       | Exclui um livro (só o dono, sem empréstimo/reserva ativos) |
+| GET    | `/api/authors`                     | sim       | Lista autores                                   |
+| GET    | `/api/authors/:id`                 | sim       | Detalhe de um autor (com seus livros)           |
+| POST   | `/api/authors`                     | sim       | Cria um autor                                   |
+| PUT    | `/api/authors/:id`                 | sim       | Atualiza um autor                               |
+| DELETE | `/api/authors/:id`                 | sim       | Exclui um autor                                 |
+| GET    | `/me/perfil`                       | sim       | Perfil (1:1) do usuário logado                  |
+| POST   | `/me/perfil`                       | sim       | Cria o perfil do usuário logado                 |
+| PUT    | `/me/perfil`                       | sim       | Atualiza o perfil do usuário logado             |
+| GET    | `/emprestimos`                     | sim       | Lista todos os empréstimos                      |
+| GET    | `/me/emprestimos`                  | sim       | Lista os empréstimos do usuário logado          |
+| GET    | `/emprestimos/:id`                 | sim       | Detalhe de um empréstimo                        |
+| POST   | `/emprestimos`                     | sim       | Cria um empréstimo (`bookId`, `dataDevolucaoPrevista`) |
+| PUT    | `/emprestimos/:id/devolver`        | sim       | Marca o empréstimo como devolvido               |
+| GET    | `/reservas`                        | sim       | Lista todas as reservas                         |
+| GET    | `/me/reservas`                     | sim       | Lista as reservas do usuário logado             |
+| GET    | `/reservas/:id`                    | sim       | Detalhe de uma reserva                          |
+| POST   | `/reservas`                        | sim       | Cria uma reserva (`bookId`)                     |
+| PUT    | `/reservas/:id/cancelar`           | sim       | Cancela uma reserva ativa                       |
+| GET    | `/relatorios/livros-com-emprestimos` | sim     | Consulta avançada: livros + autores + empréstimos + reservas ativas |
+| GET    | `/health`                          | não       | Verifica se a API e o banco estão OK            |
 
 Rotas protegidas exigem o header `Authorization: Bearer <token>`.
+
+## Depois de puxar essas mudanças
+
+Como o schema mudou (novas tabelas `perfis`, `authors`, `book_authors`,
+`emprestimos`, `reservas`, e a coluna `autor` foi removida de `products`),
+rode:
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+O Prisma vai detectar a migration já escrita em
+`prisma/migrations/20260902120000_add_authors_perfil_emprestimos_reservas`
+e aplicá-la no seu banco Neon. Se preferir, pode deixar o Prisma gerar a
+migration sozinho (`migrate dev --name ...`) a partir do novo
+`schema.prisma` — o efeito final é o mesmo.
 
 ## Rodando os testes
 

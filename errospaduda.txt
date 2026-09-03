@@ -1,0 +1,9 @@
+erros: 
+
+1- se o isbn for grande demais os botão começa a fica fora datela 
+
+2- não deixe cadastrar livro sem autor
+
+3- precisa mover o botão de tema claro pq tá escondendo o botão de deslogar
+
+4- o botão de enviar (q o nome poderia ser cadastrar) tá difícil de apertar

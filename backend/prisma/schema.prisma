@@ -11,27 +11,135 @@ datasource db {
   provider = "postgresql"
 }
 
-
-// No código (seu modelo)
+// ============================================================
+// USER — dono do cadastro. Participa de:
+//  - 1:N  com Book       (livros cadastrados pelo usuário)
+//  - 1:1  com Perfil     (dados adicionais do usuário)
+//  - 1:N  com Emprestimo (empréstimos feitos pelo usuário)
+//  - 1:N  com Reserva    (reservas feitas pelo usuário)
+// ============================================================
 model User {
-  id       String    @id @default(cuid())
-  email    String    @unique
-  username String    @unique
+  id       String @id @default(cuid())
+  email    String @unique
+  username String @unique
   password String
-  products Book[]
 
-  @@map("users")  // Tabela no banco será "users"
+  livros      Book[]
+  perfil      Perfil?
+  emprestimos Emprestimo[]
+  reservas    Reserva[]
+
+  @@map("users")
 }
 
-model Book {
-  id          String   @id @default(cuid())
-  titulo      String
-  autor       String
-  isbn        String   @unique
-  descricao   String
-  quantidade  Int
-  userId      String
-  user        User     @relation(fields: [userId], references: [id])
+// ============================================================
+// PERFIL — relacionamento 1:1 com User.
+// Cada usuário pode ter no máximo um perfil (userId é @unique).
+// ============================================================
+model Perfil {
+  id           String  @id @default(cuid())
+  nomeCompleto String
+  telefone     String?
+  endereco     String?
 
-  @@map("products")  // Tabela no banco será "products"
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("perfis")
+}
+
+// ============================================================
+// AUTHOR — relacionamento N:N com Book através de BookAuthor.
+// Um autor pode ter escrito vários livros, e um livro pode ter
+// vários autores (coautoria).
+// ============================================================
+model Author {
+  id            String @id @default(cuid())
+  nome          String
+  nacionalidade String?
+
+  books BookAuthor[]
+
+  @@map("authors")
+}
+
+// ============================================================
+// BOOK — entidade central do tema.
+//  - N:1 com User        (quem cadastrou o livro)
+//  - N:N com Author      (via BookAuthor)
+//  - 1:N com Emprestimo
+//  - 1:N com Reserva
+// ============================================================
+model Book {
+  id         String @id @default(cuid())
+  titulo     String
+  isbn       String @unique
+  descricao  String
+  quantidade Int
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  authors     BookAuthor[]
+  emprestimos Emprestimo[]
+  reservas    Reserva[]
+
+  @@map("products")
+}
+
+// ============================================================
+// BOOK_AUTHOR — tabela de junção que implementa o N:N entre
+// Book e Author.
+// ============================================================
+model BookAuthor {
+  bookId   String
+  authorId String
+
+  book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
+  author Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@id([bookId, authorId])
+  @@map("book_authors")
+}
+
+// ============================================================
+// EMPRESTIMO — N:1 com User e N:1 com Book (ou seja, 1:N a
+// partir de User e de Book). Regra de negócio: não é permitido
+// criar um empréstimo se não houver exemplares disponíveis.
+// status: "ABERTO" | "DEVOLVIDO"
+// ============================================================
+model Emprestimo {
+  id                    String    @id @default(cuid())
+  dataEmprestimo        DateTime  @default(now())
+  dataDevolucaoPrevista DateTime
+  dataDevolucaoReal     DateTime?
+  status                String    @default("ABERTO")
+
+  bookId String
+  book   Book   @relation(fields: [bookId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("emprestimos")
+}
+
+// ============================================================
+// RESERVA — N:1 com User e N:1 com Book. Regra de negócio: um
+// mesmo usuário não pode ter duas reservas ATIVAS para o mesmo
+// livro.
+// status: "ATIVA" | "CANCELADA" | "ATENDIDA"
+// ============================================================
+model Reserva {
+  id          String   @id @default(cuid())
+  dataReserva DateTime @default(now())
+  status      String   @default("ATIVA")
+
+  bookId String
+  book   Book   @relation(fields: [bookId], references: [id])
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("reservas")
 }

@@ -12,6 +12,15 @@ jest.mock('../config/db', () => ({
     update: jest.fn(),
     delete: jest.fn(),
   },
+  bookAuthor: {
+    deleteMany: jest.fn(),
+  },
+  emprestimo: {
+    findFirst: jest.fn(),
+  },
+  reserva: {
+    findFirst: jest.fn(),
+  },
 }));
 
 const request = require('supertest');
@@ -28,7 +37,6 @@ function tokenPara(user) {
 
 const livroValido = {
   titulo: 'O Senhor dos Anéis',
-  autor: 'J.R.R. Tolkien',
   isbn: '9780261103573',
   descricao: 'Fantasia épica',
   quantidade: 3,
@@ -98,7 +106,9 @@ describe('GET /api/me/books', () => {
       .set('Authorization', `Bearer ${tokenPara(USER_A)}`);
 
     expect(res.status).toBe(200);
-    expect(prisma.book.findMany).toHaveBeenCalledWith({ where: { userId: USER_A.id } });
+    expect(prisma.book.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { userId: USER_A.id } })
+    );
   });
 });
 

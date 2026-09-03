@@ -162,3 +162,84 @@ export function deletarLivro(id, token) {
   });
 
 }
+
+// ===============================================================
+// AUTORES
+// ===============================================================
+
+export function listarAutores(token) {
+  return request({ url: '/api/authors', token });
+}
+
+export function criarAutor(autor, token) {
+  return request({ url: '/api/authors', method: 'POST', data: autor, token });
+}
+
+export function atualizarAutor(id, autor, token) {
+  return request({ url: `/api/authors/${id}`, method: 'PUT', data: autor, token });
+}
+
+export function deletarAutor(id, token) {
+  return request({ url: `/api/authors/${id}`, method: 'DELETE', token });
+}
+
+// ===============================================================
+// PERFIL (1:1 com o usuário)
+// ===============================================================
+
+export function buscarMeuPerfil(token) {
+  return request({ url: '/me/perfil', token });
+}
+
+export function criarPerfil(perfil, token) {
+  return request({ url: '/me/perfil', method: 'POST', data: perfil, token });
+}
+
+export function atualizarPerfil(perfil, token) {
+  return request({ url: '/me/perfil', method: 'PUT', data: perfil, token });
+}
+
+// ===============================================================
+// EMPRÉSTIMOS
+// ===============================================================
+
+export function listarMeusEmprestimos(token) {
+  return request({ url: '/me/emprestimos', token });
+}
+
+export function criarEmprestimo({ bookId, dataDevolucaoPrevista }, token) {
+  return request({
+    url: '/emprestimos',
+    method: 'POST',
+    data: { bookId, dataDevolucaoPrevista },
+    token,
+  });
+}
+
+export function devolverEmprestimo(id, token) {
+  return request({ url: `/emprestimos/${id}/devolver`, method: 'PUT', token });
+}
+
+// ===============================================================
+// RESERVAS
+// ===============================================================
+
+export function listarMinhasReservas(token) {
+  return request({ url: '/me/reservas', token });
+}
+
+export function criarReserva({ bookId }, token) {
+  return request({ url: '/reservas', method: 'POST', data: { bookId }, token });
+}
+
+export function cancelarReserva(id, token) {
+  return request({ url: `/reservas/${id}/cancelar`, method: 'PUT', token });
+}
+
+// ===============================================================
+// RELATÓRIO (consulta avançada)
+// ===============================================================
+
+export function relatorioLivrosComEmprestimos(token) {
+  return request({ url: '/relatorios/livros-com-emprestimos', token });
+}
